@@ -110,15 +110,28 @@ def run_case(base_url: str, case: dict):
     return reply, history
 
 
+PHONE_RE = re.compile(r"^\(?\d{3}\)?[-. ]?\d{3}[-. ]?\d{4}$")
+
+
+def _hit(alt: str, low: str, low_digits: str) -> bool:
+    if alt.lower() in low:
+        return True
+    # phone numbers match on digits, so "910-343-0145" finds "(910) 343-0145"
+    if PHONE_RE.match(alt):
+        return re.sub(r"\D", "", alt) in low_digits
+    return False
+
+
 def check(case: dict, reply: str):
     # strip markdown emphasis so "does **not**" matches "does not"
     low = reply.replace("*", "").replace("_", "").lower()
+    low_digits = re.sub(r"\D", "", low)
     failures = []
     for group in case.get("must_contain", []):
-        if not any(alt.lower() in low for alt in group):
+        if not any(_hit(alt, low, low_digits) for alt in group):
             failures.append(f"missing any of: {group}")
     for bad in case.get("must_not_contain", []):
-        if bad.lower() in low:
+        if _hit(bad, low, low_digits):
             failures.append(f"forbidden text present: {bad!r}")
     return failures
 
