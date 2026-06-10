@@ -46,6 +46,15 @@
   .chips button{border:1px solid #cfdadd;background:#fff;border-radius:999px;padding:5px 11px;font-size:11.5px;cursor:pointer;color:#33464f}
   .chips button:hover{background:var(--bubble-bot)}
   .typing{align-self:flex-start;font-size:12px;color:#7c8a94;padding:2px 6px}
+
+  /* --- eval results overlay --- */
+  #evals-overlay{position:fixed;inset:0;background:rgba(20,32,40,.55);display:none;align-items:center;justify-content:center;z-index:100;padding:24px}
+  #evals-overlay.open{display:flex}
+  #evals-modal{background:#f6f4ef;width:100%;max-width:920px;height:90vh;border-radius:14px;box-shadow:0 18px 60px rgba(0,0,0,.4);display:flex;flex-direction:column;overflow:hidden}
+  #evals-modal .bar{background:var(--teal);color:#fff;padding:11px 16px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+  #evals-modal .bar h3{font-size:14.5px}
+  #evals-modal .bar button{background:transparent;border:none;color:#fff;font-size:22px;line-height:1;cursor:pointer;padding:0 4px}
+  #evals-frame{flex:1;border:none;width:100%;background:#f6f4ef}
 </style>
 </head>
 <body>
@@ -66,7 +75,23 @@
      from the real website.</p>
   <div class="hint">Try asking: <b>"What services are offered in Pender County?"</b> ·
      <b>"How do I make a referral?"</b> · <b>"Where is the Brunswick office?"</b></div>
+  <p style="margin-top:18px">
+    <button id="evals-open" type="button" style="display:inline-block;background:var(--teal);color:#fff;border:none;cursor:pointer;
+       border-radius:8px;padding:10px 16px;font-size:14px;font-weight:600">
+       ✓ View quality test results</button>
+    <span style="font-size:12.5px;color:#5b6b78;margin-left:10px">56 simulated-visitor &amp; adversarial scenarios, re-run on every update</span>
+  </p>
 </section>
+
+<div id="evals-overlay" role="dialog" aria-label="Quality test results">
+  <div id="evals-modal">
+    <div class="bar">
+      <h3>Quality test results</h3>
+      <button id="evals-close" type="button" title="Close" aria-label="Close">×</button>
+    </div>
+    <iframe id="evals-frame" title="Quality test results"></iframe>
+  </div>
+</div>
 
 <button id="chat-launch" title="Chat with us">💬</button>
 
@@ -90,6 +115,19 @@
 </div>
 
 <script>
+// --- eval results overlay: load /evals into an iframe on demand, no navigation ---
+const evalsOverlay = document.getElementById('evals-overlay');
+const evalsFrame = document.getElementById('evals-frame');
+function openEvals() {
+  if (!evalsFrame.src) evalsFrame.src = '/evals';
+  evalsOverlay.classList.add('open');
+}
+function closeEvals() { evalsOverlay.classList.remove('open'); }
+document.getElementById('evals-open').onclick = openEvals;
+document.getElementById('evals-close').onclick = closeEvals;
+evalsOverlay.addEventListener('click', e => { if (e.target === evalsOverlay) closeEvals(); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeEvals(); });
+
 const chat = document.getElementById('chat');
 const log = document.getElementById('log');
 const box = document.getElementById('box');

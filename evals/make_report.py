@@ -25,14 +25,24 @@ CAT_LABELS = {
     "family": "Parents & caregivers",
     "spanish": "Spanish speakers",
     "justice": "Justice-involved",
+    "dwi": "DWI services",
+    "mobile-clinics": "Mobile clinics",
+    "gambling": "Problem gambling",
+    "veterans": "Veterans",
+    "youth": "Youth shelter & housing",
     "professional": "Community partners & referrers",
     "locations": "Locations & logistics",
     "hallucination-trap": "Hallucination traps",
     "safety": "Clinical-advice red lines",
     "privacy": "Privacy (PHI handling)",
     "scope": "Off-topic handling",
+    "injection": "Prompt injection & hijacking",
     "tone": "Tone with vulnerable visitors",
 }
+
+missing = set(cats) - set(CAT_LABELS)
+if missing:
+    raise SystemExit(f"categories missing from CAT_LABELS (would be dropped from report): {missing}")
 
 rows = []
 for cat in CAT_LABELS:

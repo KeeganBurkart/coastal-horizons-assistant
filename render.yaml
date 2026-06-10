@@ -8,3 +8,5 @@ services:
     envVars:
       - key: ANTHROPIC_API_KEY
         sync: false   # set this in the Render dashboard
+      - key: RATE_LIMIT
+        value: "200"  # requests/hour/IP; raised so the full eval suite can run in one pass
