@@ -1,0 +1,57 @@
+name: Evals
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  evals:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check for API key
+        id: key
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          if [ -z "$ANTHROPIC_API_KEY" ]; then
+            echo "::warning::ANTHROPIC_API_KEY secret not set — skipping evals"
+            echo "have_key=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "have_key=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Start server
+        if: steps.key.outputs.have_key == 'true'
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          RATE_LIMIT: "500"
+        run: |
+          python3 server.py &
+          for i in $(seq 1 30); do
+            curl -sf http://localhost:8787/health && break
+            sleep 1
+          done
+
+      - name: Run eval suite (with LLM judge)
+        if: steps.key.outputs.have_key == 'true'
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: python3 evals/run_evals.py --delay 0.3 --judge
+
+      - name: Generate report
+        if: always() && steps.key.outputs.have_key == 'true'
+        run: python3 evals/make_report.py
+
+      - name: Upload report
+        if: always() && steps.key.outputs.have_key == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: eval-report
+          path: |
+            evals/report.html
+            evals/evals_results.json

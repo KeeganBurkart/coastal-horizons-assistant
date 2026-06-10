@@ -29,6 +29,7 @@ HOST = os.environ.get("HOST", "0.0.0.0")
 PORT = int(os.environ.get("PORT", "8787"))
 RATE_LIMIT = int(os.environ.get("RATE_LIMIT", "30"))        # requests
 RATE_WINDOW = int(os.environ.get("RATE_WINDOW", "3600"))    # per seconds, per IP
+TRUST_PROXY = os.environ.get("TRUST_PROXY", "") == "1"      # trust X-Forwarded-For (set behind Render)
 API_KEY = os.environ.get("ANTHROPIC_API_KEY", "").strip()
 MODEL = os.environ.get("ASSISTANT_MODEL", "claude-haiku-4-5-20251001")
 MAX_TURNS = 20          # cap conversation length sent to the API
@@ -139,9 +140,13 @@ def rate_limited(ip: str) -> bool:
 
 class Handler(BaseHTTPRequestHandler):
     def client_ip(self) -> str:
-        # behind Render/most proxies the real IP is in X-Forwarded-For
-        fwd = self.headers.get("X-Forwarded-For", "")
-        return fwd.split(",")[0].strip() if fwd else self.client_address[0]
+        # X-Forwarded-For is client-controlled; only trust it when we know a
+        # proxy (Render) sets it, otherwise rate limits are trivially spoofable
+        if TRUST_PROXY:
+            fwd = self.headers.get("X-Forwarded-For", "")
+            if fwd:
+                return fwd.split(",")[0].strip()
+        return self.client_address[0]
 
     def _send(self, code, content, ctype="application/json"):
         if isinstance(content, (dict, list)):

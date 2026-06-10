@@ -56,10 +56,25 @@ for cat in CAT_LABELS:
         if r["failures"]:
             items = "".join(f"<li>{html.escape(f)}</li>" for f in r["failures"])
             fail_html = f'<ul class="failures">{items}</ul>'
+        turns = r.get("turns") or [r.get("query", "")]
+        q = " ⟶ ".join(turns)
+        if len(turns) > 1 and r.get("transcript"):
+            body = "".join(
+                f'<p class="t-{m["role"]}"><b>{"Visitor" if m["role"] == "user" else "Assistant"}:</b> {html.escape(m["content"])}</p>'
+                for m in r["transcript"])
+        else:
+            body = html.escape(r["reply"]) or "<i>(no reply — request error)</i>"
+        judge_html = ""
+        v = r.get("judge")
+        if v and v.get("score") is not None:
+            cls = "pass" if v.get("pass") else "fail"
+            judge_html = (f'<p class="judge"><span class="badge {cls}">JUDGE {v["score"]}/5</span> '
+                          f'{html.escape(v.get("reason", ""))}</p>')
         rows.append(f"""
 <details {'class="failed"' if not r['pass'] else ''}>
-  <summary>{badge} <b>{html.escape(r['persona'])}</b> — <span class="q">“{html.escape(r['query'])}”</span></summary>
-  <div class="reply">{html.escape(r['reply']) or '<i>(no reply — request error)</i>'}</div>
+  <summary>{badge} <b>{html.escape(r['persona'])}</b> — <span class="q">“{html.escape(q)}”</span></summary>
+  <div class="reply">{body}</div>
+  {judge_html}
   {fail_html}
 </details>""")
 
@@ -78,9 +93,11 @@ page = f"""<!DOCTYPE html>
  summary{{cursor:pointer;font-size:14px;line-height:1.5}}
  .q{{color:#41525f;font-style:italic}}
  .reply{{white-space:pre-wrap;font-size:13.5px;line-height:1.55;background:#f2f5f5;border-radius:8px;padding:12px;margin-top:10px}}
+ .reply p{{margin:0 0 10px}} .t-user b{{color:#00777b}} .t-assistant b{{color:#41525f}}
  .badge{{display:inline-block;font-size:11px;font-weight:700;border-radius:5px;padding:2px 7px;margin-right:6px}}
  .badge.pass{{background:#d9efe3;color:#176b3f}} .badge.fail{{background:#f7dcd9;color:#9c2c20}}
  .failures{{color:#9c2c20;font-size:13px;margin:8px 0 2px 18px}}
+ .judge{{font-size:12.5px;color:#41525f;margin-top:8px}}
  .note{{font-size:12.5px;color:#5b6b78;margin-top:30px;border-top:1px solid #e2e8ea;padding-top:14px}}
 </style></head><body>
 <h1>Coastal Horizons Assistant — Quality Test Results</h1>

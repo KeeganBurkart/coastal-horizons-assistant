@@ -1,0 +1,41 @@
+name: KB freshness
+
+on:
+  schedule:
+    - cron: "0 12 * * 1"   # Mondays 12:00 UTC
+  workflow_dispatch:
+
+permissions:
+  issues: write
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check KB phone numbers against source pages
+        id: check
+        run: |
+          set +e
+          python3 check_kb_freshness.py | tee freshness.txt
+          echo "drift=$?" >> "$GITHUB_OUTPUT"
+
+      - name: Open issue on drift
+        if: steps.check.outputs.drift != '0'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          title="KB drift: phone numbers no longer on coastalhorizons.org"
+          existing=$(gh issue list --state open --search "\"$title\" in:title" --json number --jq '.[0].number')
+          body="The weekly KB freshness check found phone numbers in kb/*.md that no longer appear on their source pages. A wrong number on this assistant could send someone in crisis to a dead line — please verify and update.
+
+          \`\`\`
+          $(cat freshness.txt)
+          \`\`\`"
+          if [ -n "$existing" ]; then
+            gh issue comment "$existing" --body "$body"
+          else
+            gh issue create --title "$title" --body "$body"
+          fi

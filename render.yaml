@@ -10,3 +10,5 @@ services:
         sync: false   # set this in the Render dashboard
       - key: RATE_LIMIT
         value: "200"  # requests/hour/IP; raised so the full eval suite can run in one pass
+      - key: TRUST_PROXY
+        value: "1"    # Render's proxy sets X-Forwarded-For; safe to trust there
