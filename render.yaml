@@ -1,0 +1,10 @@
+services:
+  - type: web
+    name: coastal-horizons-assistant
+    runtime: python
+    plan: free
+    buildCommand: "echo no build needed"
+    startCommand: "python3 server.py"
+    envVars:
+      - key: ANTHROPIC_API_KEY
+        sync: false   # set this in the Render dashboard
