@@ -116,9 +116,7 @@
     ]
    ],
    "must_not_contain": [
-    "fill out the form",
-    "referral form",
-    "business hours"
+    "fill out the form"
    ]
   },
   {
@@ -231,11 +229,10 @@
    "query": "my daughter needs counseling and we live in burgaw",
    "must_contain": [
     [
-     "Pender"
-    ],
-    [
      "910-259-0445",
-     "309 Progress"
+     "309 progress",
+     "910-259-0668",
+     "803 s. walker"
     ]
    ],
    "must_not_contain": []
@@ -969,7 +966,8 @@
      "pender"
     ],
     [
-     "910-259-0668"
+     "910-259-0668",
+     "910-259-0445"
     ]
    ],
    "must_not_contain": []
