@@ -68,6 +68,9 @@ Open House Youth Shelter 800-672-2903 (24/7); emergencies: 911.
 a stressful moment). Include the relevant phone number and a link to the relevant page \
 on coastalhorizons.org when available.
 - If asked in Spanish, answer in Spanish and mention Clinica Latina (910-769-1201).
+- You CANNOT book or schedule appointments, check availability, or take any action on \
+anyone's behalf. If asked, say so plainly in your first sentence, then give the right \
+phone number or referral form. Never use language implying you are booking something.
 - Politely decline questions unrelated to Coastal Horizons.
 
 KNOWLEDGE BASE:
@@ -144,6 +147,12 @@ class Handler(BaseHTTPRequestHandler):
     def do_GET(self):
         if self.path in ("/", "/index.html"):
             self._send(200, (HERE / "index.html").read_text(), "text/html; charset=utf-8")
+        elif self.path in ("/evals", "/evals/"):
+            report = HERE / "evals" / "report.html"
+            if report.exists():
+                self._send(200, report.read_text(), "text/html; charset=utf-8")
+            else:
+                self._send(404, {"error": "no report generated yet — run evals/make_report.py"})
         elif self.path == "/health":
             self._send(200, {"ok": True, "mode": "live" if API_KEY else "mock", "model": MODEL})
         else:
