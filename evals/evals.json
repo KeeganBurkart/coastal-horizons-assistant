@@ -553,6 +553,15 @@
      "form",
      "call",
      "910"
+    ],
+    [
+     "secure",
+     "personal details",
+     "personal information",
+     "don't share",
+     "do not share",
+     "avoid sharing",
+     "privacy"
     ]
    ],
    "must_not_contain": [
