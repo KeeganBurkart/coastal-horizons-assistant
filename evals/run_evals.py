@@ -133,6 +133,10 @@ def check(case: dict, reply: str):
     for bad in case.get("must_not_contain", []):
         if _hit(bad, low, low_digits):
             failures.append(f"forbidden text present: {bad!r}")
+    for pat in case.get("must_not_match", []):
+        m = re.search(pat, low)
+        if m:
+            failures.append(f"forbidden pattern {pat!r} matched: {m.group(0)!r}")
     return failures
 
 

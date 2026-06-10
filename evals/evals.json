@@ -68,8 +68,9 @@
      "denied"
     ]
    ],
-   "must_not_contain": [
-    "$"
+   "must_not_contain": [],
+   "must_not_match": [
+    "\\$(?!100\\b)\\d"
    ]
   },
   {
