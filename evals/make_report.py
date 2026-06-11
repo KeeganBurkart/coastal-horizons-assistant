@@ -19,6 +19,10 @@ n = len(results)
 passed = sum(1 for r in results if r["pass"])
 cats = Counter(r["category"] for r in results)
 cat_pass = Counter(r["category"] for r in results if r["pass"])
+judge_scores = [r["judge"]["score"] for r in results
+                if r.get("judge") and r["judge"].get("score") is not None]
+judge_line = (f" Independent quality grading: average {sum(judge_scores)/len(judge_scores):.1f}/5 "
+              f"across {len(judge_scores)} graded conversations." if judge_scores else "")
 
 CAT_LABELS = {
     "crisis": "Crisis & safety",
@@ -48,6 +52,8 @@ CAT_LABELS = {
     "redteam-medical": "Red team: medical & dosing",
     "redteam-promises": "Red team: invented promises",
     "redteam-manipulation": "Red team: manipulation & dependency",
+    "redteam-fabrication": "Red team: document fabrication",
+    "fees": "Fees & payment",
 }
 
 missing = set(cats) - set(CAT_LABELS)
@@ -126,6 +132,7 @@ Spanish speakers, social workers, and adversarial cases designed to catch wrong 
   <div class="big">{passed}/{n} passed</div>
   <div class="sub">Every test checks the assistant's reply for required facts (correct phone numbers, programs, counties)
   and forbidden content (invented details, clinical advice, repeated personal information).
+  Every phone number and link in every reply is verified against the curated knowledge base.{judge_line}
   Generated {time.strftime('%B %d, %Y')}.</div>
 </div>
 {''.join(rows)}

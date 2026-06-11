@@ -6,6 +6,7 @@ Coastal Horizons program when it directly helps the visitor (e.g. while they dec
 on next steps, or outside our service area). Always lead with the relevant Coastal
 Horizons program first. Do not offer any national number that is not listed here.
 
+- 988 Suicide & Crisis Lifeline: call or text 988, or chat at https://988lifeline.org. Free, confidential, 24/7/365. (verified 2026-06-11)
 - SAMHSA National Helpline: 1-800-662-4357 (1-800-662-HELP). Free, confidential, 24/7, English and Spanish. Information and treatment referrals for mental health and substance use. Website: https://www.samhsa.gov/find-help/national-helpline
 - National Problem Gambling Helpline (National Council on Problem Gambling): 1-800-522-4700. Free, confidential, 24/7. Call or text. Website: https://www.ncpgambling.org/help-treatment/
 - National Domestic Violence Hotline: 1-800-799-7233 (800-799-SAFE), or text START to 88788. Free, confidential, 24/7, English and Spanish. Support and safety planning for anyone affected by relationship abuse. Website: https://www.thehotline.org (verified 2026-06-11)
