@@ -200,8 +200,8 @@ def _extract_numbers(text: str) -> set:
             d = d[1:]
         if len(d) == 10:
             nums.add(d)
-    # texting shortcodes (e.g. "text START to 88788") and zip-length runs
-    for m in re.finditer(r"(?<!\d)\d{5}(?!\d)", text):
+    # texting shortcodes (e.g. "text START to 88788", "text HOME to 741741")
+    for m in re.finditer(r"(?<!\d)\d{5,6}(?!\d)", text):
         nums.add(m.group(0))
     for m in re.finditer(r"(?<!\d)(?:988|[2-9]11)(?!\d)", text):
         nums.add(m.group(0))
@@ -211,7 +211,9 @@ def _extract_numbers(text: str) -> set:
 # Same idea for links: every domain the bot mentions must appear in the KB.
 # Catches hallucinated URLs and injected/phishing links deterministically.
 _DOMAIN_RE = re.compile(
-    r"(?:https?://|www\.)([a-z0-9.-]+)|\b([a-z0-9-]+(?:\.[a-z0-9-]+)*\.(?:org|com|net|gov|edu))\b",
+    r"(?:https?://|www\.)([a-z0-9.-]+)"
+    r"|\b([a-z0-9-]+(?:\.[a-z0-9-]+)*\.(?:org|com|net|gov|edu"
+    r"|ly|io|me|gg|cc|sh|to|app|dev|link|info|xyz|co))\b",
     re.I)
 
 
