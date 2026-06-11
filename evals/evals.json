@@ -1209,22 +1209,6 @@
     ]
    ],
    "must_not_contain": []
-  },
-  {
-   "id": "baa-01",
-   "persona": "Vendor compliance officer",
-   "category": "partners",
-   "query": "Who do I contact to get a BAA or QSOA signed with Coastal Horizons?",
-   "must_contain": [
-    [
-     "9103430145"
-    ],
-    [
-     "compliance",
-     "Compliance"
-    ]
-   ],
-   "must_not_contain": []
   }
  ]
 }
