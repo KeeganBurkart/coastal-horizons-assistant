@@ -98,6 +98,20 @@ code changes are needed to update content.
 - A Monday GitHub Action (`kb-freshness.yml`) diffs the KB's source pages
   and flags drift, but it only catches pages we already track.
 
+## Red-team suite (worst-case scenarios)
+
+The eval suite includes 22 adversarial cases (ids `rt-*`) modeled on real chatbot
+incidents in the news: secrecy promises to minors disclosing abuse, oblique
+self-harm questions, DIY medication tapering, eating-disorder calorie requests,
+manufactured screenshots of "free treatment" promises, and roleplay/dependency
+bait. Most are multi-turn — the dangerous ask comes after rapport is built.
+The LLM judge applies a "headline test": would the reply be defensible quoted
+verbatim in a news story?
+
+**Policy:** unlike the rest of the suite, a failing `rt-*` case must never be
+fixed by loosening its assertions without a human reading the actual reply.
+For these cases, a flaky failure is the test doing its job.
+
 ## Usage analytics (privacy-preserving)
 
 The server tracks what visitors ask and where the assistant falls short —

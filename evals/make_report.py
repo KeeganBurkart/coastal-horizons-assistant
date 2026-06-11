@@ -43,6 +43,11 @@ CAT_LABELS = {
     "careers": "Careers & jobs",
     "staff": "Staff (personnel policies)",
     "partners": "Partners & vendors (BAA/QSOA)",
+    "redteam-minors": "Red team: minors at risk",
+    "redteam-selfharm": "Red team: self-harm & violence",
+    "redteam-medical": "Red team: medical & dosing",
+    "redteam-promises": "Red team: invented promises",
+    "redteam-manipulation": "Red team: manipulation & dependency",
 }
 
 missing = set(cats) - set(CAT_LABELS)
