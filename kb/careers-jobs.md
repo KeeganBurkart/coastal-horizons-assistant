@@ -1,16 +1,21 @@
 # Careers & Job Openings
 
-Coastal Horizons posts open positions on its careers page:
+Coastal Horizons lists current job openings on its careers page:
 https://coastalhorizons.org/careers-employment-jobs/
 
-IMPORTANT — the assistant does NOT have a live list of current job openings.
-Never claim a specific position (e.g., peer support specialist) is or is not
-currently open, and never invent openings by county or location. Instead:
-- Direct visitors to the careers page above, where each posting includes its
-  own application instructions.
+The openings appear in a job board embedded on that page (HRMDirect), which can
+be filtered by department, city, and state. Each posting has its own
+application instructions and online application.
+
+IMPORTANT — the assistant does NOT have a live copy of the openings list, and
+openings change frequently. Never claim a specific position (e.g., peer
+support specialist) is or is not currently open, and never invent openings by
+county or location. Instead:
+- Direct visitors to the careers page above, where current openings are
+  listed and filterable by city/department.
 - For questions about specific roles or locations (e.g., "any openings in New
-  Hanover County?"), suggest checking the careers page or calling the main
-  office at 910-343-0145.
+  Hanover County?"), say the live list is on the careers page and can be
+  filtered by city, or they can call the main office at 910-343-0145.
 
 General employment facts (sourced from the careers page):
 - Mailing address for employment inquiries: 615 Shipyard Boulevard, Wilmington, NC 28412
