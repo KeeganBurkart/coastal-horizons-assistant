@@ -12,6 +12,12 @@
   *{box-sizing:border-box;margin:0}
   body{font-family:-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;background:var(--sand);color:var(--ink)}
 
+  /* --- about-this-project strip (for reviewers / visitors landing cold) --- */
+  .about{background:var(--ink);color:#dce4e9;font-size:12.5px;line-height:1.6;padding:9px 28px;text-align:center}
+  .about a{color:#9fd8db;font-weight:600;text-decoration:none}
+  .about a:hover{text-decoration:underline}
+  .about b{color:#fff}
+
   /* --- fake host page, so stakeholders see it "on the website" --- */
   header.site{background:#fff;border-bottom:4px solid var(--teal);padding:18px 28px;display:flex;align-items:center;gap:14px}
   header.site .logo{width:44px;height:44px;border-radius:50%;background:var(--teal);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:18px}
@@ -73,6 +79,14 @@
 </head>
 <body>
 
+<div class="about">
+  An AI assistant for <b>Coastal Horizons Center</b>, a behavioral-health nonprofit in Wilmington, NC —
+  built in-house by <b>Keegan Burkart</b> (technology intern) with Python + Claude.
+  Crisis-safe by design, ~$15/month to run, validated by
+  <a href="/evals" target="_blank" rel="noopener">140 automated safety &amp; quality tests</a> ·
+  <a href="https://github.com/KeeganBurkart/coastal-horizons-assistant" target="_blank" rel="noopener">source on GitHub</a>
+</div>
+
 <header class="site">
   <div class="logo">CH</div>
   <div>
@@ -93,7 +107,7 @@
     <button id="evals-open" type="button" style="display:inline-block;background:var(--teal);color:#fff;border:none;cursor:pointer;
        border-radius:8px;padding:10px 16px;font-size:14px;font-weight:600">
        ✓ View quality test results</button>
-    <span style="font-size:12.5px;color:#5b6b78;margin-left:10px">65 simulated-visitor &amp; adversarial scenarios, re-run on every update</span>
+    <span style="font-size:12.5px;color:#5b6b78;margin-left:10px">140 simulated-visitor &amp; adversarial scenarios, re-run on every update</span>
   </p>
 </section>
 

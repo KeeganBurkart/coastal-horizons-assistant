@@ -1,6 +1,10 @@
 # Coastal Horizons Website Assistant — MVP
 
-An AI chat widget that helps coastalhorizons.org visitors find what services are offered in their county, how to make a referral, and where offices are located. Built in-house as an alternative to purchasing a chatbot product.
+An AI chat widget that helps coastalhorizons.org visitors find what services are offered in their county, how to make a referral, and where offices are located. Built in-house by **Keegan Burkart** (technology intern, Coastal Horizons Center) as an alternative to purchasing a chatbot product.
+
+![The assistant answering a question about Pender County services on the demo page](docs/widget-demo.png)
+
+**Live demo:** https://coastal-horizons-assistant.onrender.com · **Test results:** [/evals](https://coastal-horizons-assistant.onrender.com/evals)
 
 ## Quick start
 
@@ -97,6 +101,34 @@ code changes are needed to update content.
   (see `careers-jobs.md` for the pattern).
 - A Monday GitHub Action (`kb-freshness.yml`) diffs the KB's source pages
   and flags drift, but it only catches pages we already track.
+
+## Safety engineering (why this is more than a chatbot)
+
+A behavioral-health assistant fails differently than a normal chatbot: a wrong
+answer here can mean a scared teenager, a person in withdrawal, or someone in
+a violent home acting on bad information. The design treats that as the
+primary engineering problem:
+
+- **Crisis-first replies.** Any indication of self-harm, harm to others, or
+  sexual assault leads the reply with the right resource (988, Rape Crisis
+  Line, Open House, 911) — and those numbers are also pinned permanently in
+  the widget UI, so they don't depend on the model behaving.
+- **No invented numbers or links — enforced, not hoped.** Testing caught the
+  model once writing the Spanish-language clinic's number as 610-769-1201
+  instead of 910-769-1201 — a digit-swapped phone number inside an otherwise
+  perfect reply. Now every phone number and every link in every reply is
+  checked against the curated knowledge base, automatically, on every change.
+  When the bot reaches for a legitimate resource it doesn't have (it tried the
+  DV Hotline, Poison Control, Crisis Text Line, the Runaway Safeline), the fix
+  is to verify the resource against its official source and add it — the bot
+  gets more helpful and more grounded at the same time.
+- **No false hope.** The assistant may never imply it booked something, that
+  someone has been notified, or that "help is on the way" — in a crisis, the
+  difference between "I'm connecting you" and "when you call, the person who
+  answers can help" is whether a kid keeps waiting in a chat window or dials.
+- **PHI is never echoed.** If a visitor shares personal health details, the
+  reply steers to the secure form without repeating any of it (42 CFR Part 2
+  provider; analytics are fixed-enum counts only — message text is never stored).
 
 ## Red-team suite (worst-case scenarios)
 
