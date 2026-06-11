@@ -34,6 +34,10 @@ RATE_WINDOW = int(os.environ.get("RATE_WINDOW", "3600"))    # per seconds, per I
 TRUST_PROXY = os.environ.get("TRUST_PROXY", "") == "1"      # trust X-Forwarded-For (set behind Render)
 API_KEY = os.environ.get("ANTHROPIC_API_KEY", "").strip()
 MODEL = os.environ.get("ASSISTANT_MODEL", "claude-haiku-4-5-20251001")
+# Low temperature: this is a safety-critical info bot, so we want consistent,
+# predictable answers (same question → same correct phone number, same crisis
+# routing) over creative variation. Tunable via env if needed.
+TEMPERATURE = float(os.environ.get("ASSISTANT_TEMPERATURE", "0.3"))
 MAX_TURNS = 20          # cap conversation length sent to the API
 MAX_MSG_CHARS = 2000    # cap individual message size
 
@@ -134,6 +138,7 @@ def call_claude(messages):
     body = {
         "model": MODEL,
         "max_tokens": 700,
+        "temperature": TEMPERATURE,
         "system": [{
             "type": "text",
             "text": SYSTEM_PROMPT,

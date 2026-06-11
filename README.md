@@ -129,6 +129,9 @@ primary engineering problem:
 - **PHI is never echoed.** If a visitor shares personal health details, the
   reply steers to the secure form without repeating any of it (42 CFR Part 2
   provider; analytics are fixed-enum counts only — message text is never stored).
+- **Consistent by design.** The model runs at low temperature (0.3), so the
+  same question yields the same correct phone number and crisis routing rather
+  than creative variation — predictability matters more than novelty here.
 
 ## Red-team suite (worst-case scenarios)
 
