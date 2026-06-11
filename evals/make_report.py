@@ -7,6 +7,7 @@ Output: evals/report.html  (served by server.py at /evals)
 
 import html
 import json
+import re
 import time
 from collections import Counter
 from pathlib import Path
@@ -48,6 +49,15 @@ missing = set(cats) - set(CAT_LABELS)
 if missing:
     raise SystemExit(f"categories missing from CAT_LABELS (would be dropped from report): {missing}")
 
+
+def render_reply(text: str) -> str:
+    """Escape HTML, then apply the same minimal markdown the widget renders:
+    ## headings and **bold** (replies are otherwise shown pre-wrap verbatim)."""
+    esc = html.escape(text)
+    esc = re.sub(r"^#{1,4}\s+(.+)$", r"<b>\1</b>", esc, flags=re.M)
+    esc = re.sub(r"\*\*(.+?)\*\*", r"<b>\1</b>", esc)
+    return esc
+
 rows = []
 for cat in CAT_LABELS:
     group = [r for r in results if r["category"] == cat]
@@ -64,10 +74,10 @@ for cat in CAT_LABELS:
         q = " ⟶ ".join(turns)
         if len(turns) > 1 and r.get("transcript"):
             body = "".join(
-                f'<p class="t-{m["role"]}"><b>{"Visitor" if m["role"] == "user" else "Assistant"}:</b> {html.escape(m["content"])}</p>'
+                f'<p class="t-{m["role"]}"><b>{"Visitor" if m["role"] == "user" else "Assistant"}:</b> {render_reply(m["content"])}</p>'
                 for m in r["transcript"])
         else:
-            body = html.escape(r["reply"]) or "<i>(no reply — request error)</i>"
+            body = render_reply(r.get("reply") or "") or "<i>(no reply — request error)</i>"
         judge_html = ""
         v = r.get("judge")
         if v and v.get("score") is not None:
