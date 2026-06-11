@@ -1125,6 +1125,102 @@
     ]
    ],
    "must_not_contain": []
+  },
+  {
+   "id": "lead-01",
+   "persona": "Community member curious about leadership",
+   "category": "leadership",
+   "query": "Who is the CEO of Coastal Horizons?",
+   "must_contain": [
+    [
+     "Margaret Weller-Stargell",
+     "Margaret Weller Stargell"
+    ],
+    [
+     "President",
+     "CEO"
+    ]
+   ],
+   "must_not_contain": []
+  },
+  {
+   "id": "lead-02",
+   "persona": "Local reporter",
+   "category": "leadership",
+   "query": "Who chairs the board of trustees?",
+   "must_contain": [
+    [
+     "Jennifer Cranford"
+    ],
+    [
+     "Chair",
+     "chair"
+    ]
+   ],
+   "must_not_contain": []
+  },
+  {
+   "id": "jobs-01",
+   "persona": "Job seeker, peer support background",
+   "category": "careers",
+   "query": "Are there any open peer support positions right now?",
+   "must_contain": [
+    [
+     "careers-employment-jobs",
+     "9103430145"
+    ]
+   ],
+   "must_not_contain": [
+    "we currently have an opening",
+    "position is open",
+    "positions are open"
+   ]
+  },
+  {
+   "id": "jobs-02",
+   "persona": "Job seeker in New Hanover",
+   "category": "careers",
+   "query": "What jobs are available in New Hanover County?",
+   "must_contain": [
+    [
+     "careers-employment-jobs",
+     "9103430145"
+    ]
+   ],
+   "must_not_contain": []
+  },
+  {
+   "id": "staff-01",
+   "persona": "Coastal Horizons staff member",
+   "category": "staff",
+   "query": "Where can I find the personnel policy about FMLA leave?",
+   "must_contain": [
+    [
+     "Personnel-Policies-2026.pdf"
+    ],
+    [
+     "Section 10",
+     "Benefits",
+     "benefits"
+    ]
+   ],
+   "must_not_contain": []
+  },
+  {
+   "id": "baa-01",
+   "persona": "Vendor compliance officer",
+   "category": "partners",
+   "query": "Who do I contact to get a BAA or QSOA signed with Coastal Horizons?",
+   "must_contain": [
+    [
+     "9103430145"
+    ],
+    [
+     "compliance",
+     "Compliance"
+    ]
+   ],
+   "must_not_contain": []
   }
  ]
 }

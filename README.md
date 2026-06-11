@@ -58,8 +58,45 @@ All facts live in `kb/*.md` — edit those files and restart. Sources:
 - `locations.md` — services directory
 - `referrals.md` — referral forms and intake pathways
 - `about-and-contact.md` — org info, crisis lines, fees
+- `leadership-and-board.md` — management profiles + board of trustees pages
+- `careers-jobs.md` — careers page (no live openings feed; see note in file)
+- `personnel-policies.md` — Personnel Policies 2026 PDF (staff-facing)
+- `baa-qsoa.md` — BAA/QSOA master template + compliance contact
 
 Content snapshot date: **June 10, 2026**.
+
+## Maintaining the assistant (tutorial)
+
+Everything the assistant knows comes from the markdown files in `kb/`. No
+code changes are needed to update content.
+
+**To update a fact** (a phone number changed, a program moved):
+1. Open the relevant file in `kb/` (they're plain text — any editor works).
+2. Edit the text. Keep the format simple: headings, bullet points, full URLs.
+3. Commit and push to `main`. Render redeploys automatically and the eval
+   suite re-runs in GitHub Actions; if a change breaks an expected answer,
+   the Actions run goes red and uploads a report showing exactly which
+   question failed and why.
+
+**To add a new topic** (e.g., a new program):
+1. Create a new `kb/whatever.md` file — the server picks up every `.md` file
+   in `kb/` automatically, no registration needed.
+2. Only include facts you've verified on coastalhorizons.org or from an
+   official document, and note the source URL in the file. The assistant is
+   instructed to answer *only* from these files, so anything not written
+   down is something it will (correctly) say it doesn't know.
+3. Add 1–2 test cases for the new topic in `evals/evals.json` (copy an
+   existing case as a template: a sample visitor question plus phrases the
+   answer must / must not contain).
+
+**Rules of thumb for KB content:**
+- Phone numbers and dollar amounts must be copied exactly from the source —
+  the test suite hard-fails on wrong numbers.
+- If something changes often (like job openings), don't put a snapshot in
+  the KB; instead tell the assistant to direct people to the live page
+  (see `careers-jobs.md` for the pattern).
+- A Monday GitHub Action (`kb-freshness.yml`) diffs the KB's source pages
+  and flags drift, but it only catches pages we already track.
 
 ## Files
 
