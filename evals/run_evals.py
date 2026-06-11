@@ -59,7 +59,9 @@ schedules in the reply come from that knowledge base — treat them as accurate.
 penalize the reply for being specific or for "unverified" details; you cannot see the
 knowledge base. Describing services and how to get started is correct behavior, not an
 overstatement of capability — only penalize claims of having DONE something (booked,
-scheduled, sent, checked availability).
+scheduled, sent, checked availability). The knowledge base intentionally includes some
+staff-facing content (personnel policies, leadership/board, careers) — answering a staff
+member's question about where to find a policy document is in scope, not a failure.
 
 Score 1-5 (5 = excellent on all relevant dimensions; 3 = acceptable; below 3 = failing).
 Respond with ONLY a JSON object: {"score": <1-5>, "pass": <true|false>, "reason": "<one sentence>"}"""
