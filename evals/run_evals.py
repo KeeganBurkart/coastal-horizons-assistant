@@ -23,6 +23,7 @@ import os
 import re
 import sys
 import time
+import urllib.error
 import urllib.request
 from pathlib import Path
 
@@ -109,8 +110,20 @@ def ask(base_url: str, messages) -> str:
         data=body,
         headers={"Content-Type": "application/json"},
     )
-    with urllib.request.urlopen(req, timeout=90) as resp:
-        data = json.loads(resp.read())
+    # the server returns 502 when the upstream API errors (rate limit, overload);
+    # back off and retry instead of failing the case
+    data = {}
+    for pause in (5, 15, 45, 0):
+        try:
+            with urllib.request.urlopen(req, timeout=90) as resp:
+                data = json.loads(resp.read())
+            break
+        except urllib.error.HTTPError as e:
+            if e.code in (502, 503, 529) and pause:
+                print(f"         … upstream {e.code}, retrying in {pause}s")
+                time.sleep(pause)
+            else:
+                raise
     if "reply" not in data:
         raise RuntimeError(f"no reply: {data}")
     return data["reply"]
