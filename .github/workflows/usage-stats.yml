@@ -1,0 +1,31 @@
+name: Usage stats snapshot
+
+on:
+  schedule:
+    - cron: "0 12 * * 1"   # Mondays 12:00 UTC, alongside the KB freshness check
+  workflow_dispatch:
+
+jobs:
+  snapshot:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Fetch /stats from deployed instance
+        run: |
+          mkdir -p stats
+          # free-tier Render spins down when idle; retry through the cold start
+          curl -sf --retry 8 --retry-delay 15 --retry-all-errors \
+            https://coastal-horizons-assistant.onrender.com/stats \
+            -o "stats/$(date +%F).json"
+          cat "stats/$(date +%F).json"
+
+      - name: Commit snapshot
+        run: |
+          git config user.name "github-actions"
+          git config user.email "actions@users.noreply.github.com"
+          git add stats/
+          git commit -m "Weekly usage stats snapshot [skip ci]" || echo "no changes"
+          git push

@@ -98,6 +98,26 @@ code changes are needed to update content.
 - A Monday GitHub Action (`kb-freshness.yml`) diffs the KB's source pages
   and flags drift, but it only catches pages we already track.
 
+## Usage analytics (privacy-preserving)
+
+The server tracks what visitors ask and where the assistant falls short —
+without ever storing message text, names, or IPs. The model tags each reply
+with a topic/language/answered trailer (stripped before the visitor sees it);
+the server keeps enum-only counters and prints one `ANALYTICS {...}` JSON line
+per turn to stdout. Because every stored value comes from a fixed enum, the
+analytics cannot contain PHI.
+
+- `GET /stats` — aggregate counters since the instance started (topics,
+  languages, outcomes, and deflections-by-topic — the "what can't we answer"
+  signal).
+- `.github/workflows/usage-stats.yml` — snapshots `/stats` from the deployed
+  instance every Monday into `stats/` for history in git.
+- Caveat: free-tier Render restarts reset the in-memory counters, so each
+  snapshot covers "since" its own timestamp, not a full week. The per-turn
+  `ANALYTICS` lines in Render's logs are the complete record if needed.
+- Review loop: topics with high deflection counts become new KB files plus
+  eval cases (see "Maintaining the assistant" above).
+
 ## Files
 
 - `server.py` — HTTP server + Claude API call (stdlib only)

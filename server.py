@@ -17,10 +17,12 @@ of a cent per conversation. If the KB grows past ~100 KB, switch to RAG.
 
 import json
 import os
+import re
+import threading
 import time
 import urllib.request
 import urllib.error
-from collections import defaultdict, deque
+from collections import Counter, defaultdict, deque
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 
@@ -86,6 +88,13 @@ on coastalhorizons.org when available.
 anyone's behalf. If asked, say so plainly in your first sentence, then give the right \
 phone number or referral form. Never use language implying you are booking something.
 - Politely decline questions unrelated to Coastal Horizons.
+- ANALYTICS TAG: end EVERY reply with one final line of exactly this form: \
+[[analytics topic=<topic> lang=<lang> answered=<yes|no>]] where <topic> is one of: \
+services, referral, locations, counties, fees, crisis, jobs, leadership, staff-policy, \
+off-topic, other; <lang> is en, es, or other; and answered=no when you could not answer \
+from the knowledge base and fell back to the main office number or website. This line is \
+stripped by the server before the visitor sees your reply; it must contain ONLY those \
+three fields, never any of the visitor's words.
 
 KNOWLEDGE BASE:
 {load_knowledge_base()}
@@ -125,6 +134,53 @@ def call_claude(messages):
     with urllib.request.urlopen(req, timeout=60) as resp:
         data = json.loads(resp.read())
     return "".join(b.get("text", "") for b in data.get("content", []))
+
+
+# --- privacy-preserving usage analytics ----------------------------------
+# Only fixed-enum tags are ever stored or printed — never message text, names,
+# or IPs — so nothing here can contain PHI (this is a 42 CFR Part 2 provider).
+TOPICS = {"services", "referral", "locations", "counties", "fees", "crisis",
+          "jobs", "leadership", "staff-policy", "off-topic", "other"}
+LANGS = {"en", "es", "other"}
+CRISIS_NUMBERS = ("988", "910-392-7460", "800-672-2903", "911")
+TAG_RE = re.compile(r"\s*\[\[analytics\b([^\]]*)\]\]\s*", re.I)
+
+_stats_lock = threading.Lock()
+_stats = {
+    "since": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+    "turns": 0,
+    "by_topic": Counter(),
+    "by_lang": Counter(),
+    "by_outcome": Counter(),
+    "deflected_by_topic": Counter(),
+}
+
+
+def parse_tag(reply: str):
+    """Strip the model's [[analytics ...]] trailer; return (clean_reply, topic, lang, answered)."""
+    topic, lang, answered = "untagged", "other", True
+    m = TAG_RE.search(reply)
+    if m:
+        fields = dict(re.findall(r"(\w+)=([\w-]+)", m.group(1)))
+        topic = fields.get("topic", "other")
+        lang = fields.get("lang", "other")
+        answered = fields.get("answered", "yes") != "no"
+        topic = topic if topic in TOPICS else "other"
+        lang = lang if lang in LANGS else "other"
+    return TAG_RE.sub("\n", reply).strip(), topic, lang, answered
+
+
+def record(topic: str, lang: str, outcome: str):
+    with _stats_lock:
+        _stats["turns"] += 1
+        _stats["by_topic"][topic] += 1
+        _stats["by_lang"][lang] += 1
+        _stats["by_outcome"][outcome] += 1
+        if outcome == "deflected":
+            _stats["deflected_by_topic"][topic] += 1
+    # one enum-only JSON line per turn; survives in Render's log retention
+    print("ANALYTICS " + json.dumps({"t": int(time.time()), "topic": topic,
+                                     "lang": lang, "outcome": outcome}), flush=True)
 
 
 _hits = defaultdict(deque)  # ip -> request timestamps (simple in-memory rate limit)
@@ -173,6 +229,10 @@ class Handler(BaseHTTPRequestHandler):
                 self._send(404, {"error": "no report generated yet — run evals/make_report.py"})
         elif self.path == "/health":
             self._send(200, {"ok": True, "mode": "live" if API_KEY else "mock", "model": MODEL})
+        elif self.path == "/stats":
+            with _stats_lock:
+                self._send(200, {k: (dict(v) if isinstance(v, Counter) else v)
+                                 for k, v in _stats.items()})
         else:
             self._send(404, {"error": "not found"})
 
@@ -199,12 +259,19 @@ class Handler(BaseHTTPRequestHandler):
 
             if not API_KEY:
                 return self._send(200, {"reply": MOCK_REPLY, "mode": "mock"})
-            reply = call_claude(clean)
+            reply, topic, lang, answered = parse_tag(call_claude(clean))
+            if any(n in reply for n in CRISIS_NUMBERS) and topic == "crisis":
+                outcome = "crisis-redirect"
+            else:
+                outcome = "answered" if answered else "deflected"
+            record(topic, lang, outcome)
             self._send(200, {"reply": reply, "mode": "live"})
         except urllib.error.HTTPError as e:
+            record("other", "other", "error")
             detail = e.read().decode()[:500]
             self._send(502, {"error": f"Claude API error {e.code}", "detail": detail})
         except Exception as e:  # noqa: BLE001
+            record("other", "other", "error")
             self._send(500, {"error": str(e)})
 
     def log_message(self, fmt, *args):
