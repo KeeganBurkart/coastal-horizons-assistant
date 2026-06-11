@@ -1,2 +1,5 @@
 __pycache__/
 .codex-work/
+.claude/
+.playwright-mcp/
+.DS_Store
