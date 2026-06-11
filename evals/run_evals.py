@@ -6,7 +6,12 @@ Usage:
     python3 run_evals.py                          # against http://localhost:8787
     python3 run_evals.py --url https://coastal-horizons-assistant.onrender.com
     python3 run_evals.py --category crisis        # one category
+    python3 run_evals.py --ids rt-min-04,inj-17   # spot-check specific cases
+    python3 run_evals.py --failed --judge         # re-run last run's failures
     python3 run_evals.py --limit 10 --delay 1.5
+
+Subset runs (--ids/--failed/--category/--limit) merge into evals_results.json
+instead of overwriting it, so the report stays complete.
 
 Checks each reply for required facts (must_contain: every group must match,
 a group matches if ANY alternative appears) and forbidden content
@@ -279,16 +284,36 @@ def main():
     ap.add_argument("--delay", type=float, default=0.5, help="seconds between requests")
     ap.add_argument("--judge", action="store_true",
                     help="also grade each reply with an LLM judge (needs ANTHROPIC_API_KEY)")
+    ap.add_argument("--ids", default=None,
+                    help="comma-separated case ids to run (e.g. rt-min-04,inj-17)")
+    ap.add_argument("--failed", action="store_true",
+                    help="re-run only the cases that failed in evals_results.json")
     args = ap.parse_args()
 
     if args.judge and not os.environ.get("ANTHROPIC_API_KEY"):
         sys.exit("--judge requires ANTHROPIC_API_KEY in the environment")
 
     cases = json.loads((HERE / "evals.json").read_text())["cases"]
+    out = HERE / "evals_results.json"
+    if args.ids:
+        wanted = {s.strip() for s in args.ids.split(",")}
+        unknown = wanted - {c["id"] for c in cases}
+        if unknown:
+            sys.exit(f"unknown case ids: {sorted(unknown)}")
+        cases = [c for c in cases if c["id"] in wanted]
+    if args.failed:
+        if not out.exists():
+            sys.exit("--failed needs a previous evals_results.json")
+        bad = {r["id"] for r in json.loads(out.read_text()) if not r["pass"]}
+        cases = [c for c in cases if c["id"] in bad]
+        if not cases:
+            print("nothing failed last run — nothing to do")
+            sys.exit(0)
     if args.category:
         cases = [c for c in cases if c["category"] == args.category]
     if args.limit:
         cases = cases[: args.limit]
+    subset = bool(args.ids or args.failed or args.category or args.limit)
 
     results, n_fail = [], 0
     for i, case in enumerate(cases, 1):
@@ -313,9 +338,16 @@ def main():
         time.sleep(args.delay)
 
     print(f"\n{len(cases) - n_fail}/{len(cases)} passed")
-    out = HERE / "evals_results.json"
-    out.write_text(json.dumps(results, indent=1, ensure_ascii=False))
-    print(f"Full replies saved to {out}")
+    if subset and out.exists():
+        # merge the spot run into the existing results so the report stays whole
+        merged = json.loads(out.read_text())
+        by_id = {r["id"]: r for r in results}
+        merged = [by_id.pop(r["id"], r) for r in merged] + list(by_id.values())
+        out.write_text(json.dumps(merged, indent=1, ensure_ascii=False))
+        print(f"Merged {len(results)} result(s) into {out}")
+    else:
+        out.write_text(json.dumps(results, indent=1, ensure_ascii=False))
+        print(f"Full replies saved to {out}")
     sys.exit(n_fail)
 
 

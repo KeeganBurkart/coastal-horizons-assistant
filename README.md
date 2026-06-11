@@ -120,6 +120,19 @@ Two checks run globally on **every assistant turn of every case**:
 fixed by loosening its assertions without a human reading the actual reply.
 For these cases, a flaky failure is the test doing its job.
 
+**Spot runs** (cheaper/faster than the full suite while iterating):
+
+```bash
+python3 evals/run_evals.py --ids rt-min-04,inj-17 --judge   # specific cases
+python3 evals/run_evals.py --failed --judge                 # only last run's failures
+python3 evals/run_evals.py --category redteam-minors        # one category
+```
+
+Subset runs merge into `evals_results.json` rather than overwriting it. The
+judge is opt-in (`--judge`) and is the main API cost; deterministic checks are
+free. CI always runs the full suite with the judge — spot runs are for local
+iteration, not a substitute for the green checkmark.
+
 ## Usage analytics (privacy-preserving)
 
 The server tracks what visitors ask and where the assistant falls short —
