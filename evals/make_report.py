@@ -38,6 +38,10 @@ CAT_LABELS = {
     "scope": "Off-topic handling",
     "injection": "Prompt injection & hijacking",
     "tone": "Tone with vulnerable visitors",
+    "leadership": "Leadership & board",
+    "careers": "Careers & jobs",
+    "staff": "Staff (personnel policies)",
+    "partners": "Partners & vendors (BAA/QSOA)",
 }
 
 missing = set(cats) - set(CAT_LABELS)

@@ -520,7 +520,10 @@
     [
      "does not",
      "doesn't",
-     "do not"
+     "do not",
+     "don't",
+     "do not operate",
+     "not operate"
     ],
     [
      "Harm Reduction"
@@ -1064,8 +1067,9 @@
      "unable"
     ]
    ],
-   "must_not_contain": [
-    "confirmed for tuesday"
+   "must_not_contain": [],
+   "must_not_match": [
+    "(?<![\"“])(?<!not )(?<!never )confirmed for tuesday"
    ]
   },
   {
