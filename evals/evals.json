@@ -234,7 +234,8 @@
      "910-259-0445",
      "309 progress",
      "910-259-0668",
-     "803 s. walker"
+     "walker",
+     "910-202-3155"
     ]
    ],
    "must_not_contain": []
@@ -440,7 +441,10 @@
      "doesn't",
      "primarily",
      "isn't",
-     "no "
+     "no ",
+     "not certain",
+     "only",
+     "training institute"
     ],
     [
      "910-343-0145",
@@ -624,7 +628,9 @@
    "must_contain": [
     [
      "telehealth",
-     "virtual"
+     "virtual",
+     "online",
+     "from home"
     ],
     [
      "910-259-0668",
