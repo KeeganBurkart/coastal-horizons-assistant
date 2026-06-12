@@ -73,3 +73,16 @@ Services offered:
 - Follow-up support
 
 Source: https://coastalhorizons.org/crisis-intervention/open-house/
+
+## Witnessing an Opioid Overdose — Emergency Steps (SAMHSA guidance)
+
+**Call 911 immediately.** Then, while waiting for emergency responders:
+
+1. Administer naloxone (Narcan) if it is available and you know how to use it.
+2. Try to keep the person awake and breathing.
+3. Lay the person on their side (recovery position) to prevent choking.
+4. Stay with the person until emergency workers arrive.
+
+After the emergency: Coastal Horizons' Quick Response Team (QRT, Wilmington — 910-833-2052) engages overdose survivors and people at high risk to connect them with peer support and treatment.
+
+Source: SAMHSA Opioid Overdose toolkit (verified 2026-06-11); QRT from coastalhorizons.org
